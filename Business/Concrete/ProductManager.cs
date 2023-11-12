@@ -1,4 +1,5 @@
-﻿using DataAccess.Abstract;
+﻿using Business.Abstract;
+using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
-    public class ProductManager
+    public class ProductManager : IProductService
     {
         IProductDal _productDal;
 
@@ -25,6 +26,16 @@ namespace Business.Concrete
         public void Add(Product product)
         {
             _productDal.Add(product);
+        }
+
+        List<Product> IProductService.GetAllByCategoryId(int id)
+        {
+            return _productDal.GetAll(p => p.CategoryId == id);
+        }
+
+        List<Product> IProductService.GetByUnitPrice(decimal unitMin, decimal unitMax)
+        {
+            return _productDal.GetAll(p => p.UnitPrice <= unitMax && p.UnitPrice >= unitMin);
         }
     }
 }
