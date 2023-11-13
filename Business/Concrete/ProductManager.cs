@@ -1,4 +1,6 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -19,29 +21,43 @@ namespace Business.Concrete
             this._productDal = productDal;
         }
 
-        public List<Product> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
-            return _productDal.GetAll();
+            if(DateTime.Now.Hour == 22)
+            {
+                return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(), Messages.ProductsListed);
         }
 
-        public void Add(Product product)
+        public IResult Add(Product product)
         {
+            if (product.ProductName.Length<2)
+            {
+                return new ErrorResult(Messages.ProductNameInvalid);
+            }
             _productDal.Add(product);
+            return new Result(true, Messages.ProductAdded);
         }
 
-        List<Product> IProductService.GetAllByCategoryId(int id)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
-            return _productDal.GetAll(p => p.CategoryId == id);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
-        List<Product> IProductService.GetByUnitPrice(decimal unitMin, decimal unitMax)
+        public IDataResult<List<Product>> GetByUnitPrice(decimal unitMin, decimal unitMax)
         {
-            return _productDal.GetAll(p => p.UnitPrice <= unitMax && p.UnitPrice >= unitMin);
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.UnitPrice <= unitMax && p.UnitPrice >= unitMin));
         }
 
-        public List<ProductDetailDto> GetProductDetail()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            return _productDal.GetProductDetails();
+            return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+
+        public IDataResult<Product> GetById(int productId)
+        {
+            return new SuccessDataResult<Product>(_productDal.Get(p=> p.ProductId == productId));
         }
     }
 }
