@@ -28,7 +28,7 @@ namespace ConsoleUI
 
             //productManager.Add(new Product { ProductId = 6, CategoryId = 2, ProductName = "Mouse Pad", UnitInStock = 35, UnitPrice = 70 });
 
-            foreach (var product in productManager.GetProductDetail())
+            foreach (var product in productManager.GetProductDetails().Data)
             {
                 Console.WriteLine(product.ProductName + " " + product.CategoryName + " " + product.UnitsInStock);
             }
