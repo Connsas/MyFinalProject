@@ -3,8 +3,10 @@ using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCutingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTOs;
 using FluentValidation;
@@ -37,6 +39,12 @@ namespace Business.Concrete
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
+            IResult result = BusinessRules.Run(CheckIfSameName(product.ProductName)
+                , CheckIfProductCountOfCategoryCorrect(product.CategoryId));
+            if (result != null)
+            {
+                return result;
+            }
             _productDal.Add(product);
             return new Result(true, Messages.ProductAdded);
         }
@@ -58,7 +66,26 @@ namespace Business.Concrete
 
         public IDataResult<Product> GetById(int productId)
         {
-            return new SuccessDataResult<Product>(_productDal.Get(p=> p.ProductId == productId));
+            return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
+        }
+
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            var result = _productDal.GetAll(p => p.ProductId == categoryId);
+            if (result.Count >= 10)
+            {
+                return new ErrorResult("Bir kategoride 10 adetten fazla ürün bulunamaz.");
+            }
+            return new SuccessResult();
+        }
+        private IResult CheckIfSameName(string name)
+        {
+            var result = _productDal.Get(p => p.ProductName == name);
+            if (result != null)
+            {
+                return new SuccessResult();
+            }
+            return new ErrorResult();
         }
     }
 }

@@ -20,6 +20,7 @@ namespace Core.CrossCutingConcerns.Validation
             if (!result.IsValid)
             {
                 throw new ValidationException(result.Errors);
+
             }
         }
     }
