@@ -13,6 +13,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPI
 {
@@ -41,17 +42,12 @@ namespace WebAPI
                     };
                 });
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowOrigin",
-                    builder => builder.WithOrigins("http://localhost:3000"));
-            });
+            builder.Services.AddCors();
 
             builder.Services.AddDependencyResolvers(new ICoreModule[]
             {
                 new CoreModule()
             });
-
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -72,17 +68,13 @@ namespace WebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors(builder => builder.WithOrigins("http://localhost:3000").AllowAnyHeader());
+            app.ConfigureCustomExceptionMiddleware();
+
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
-
-            app.Use((context, next) =>
-            {
-                Thread.CurrentPrincipal = context.User;
-                return next(context);
-            });
 
             app.UseAuthorization();
 

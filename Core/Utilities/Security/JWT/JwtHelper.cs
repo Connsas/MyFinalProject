@@ -31,6 +31,7 @@ namespace Core.Utilities.Security.JWT
             var jwt = CreateJwtSecurityToken(_tokenOptions, user, signingCredentials, operationClaims);
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwt);
+
             return new AccessToken
             {             
                 Token = token,
@@ -55,7 +56,7 @@ namespace Core.Utilities.Security.JWT
 
         private IEnumerable<Claim> SetClaims(User user, List<OperationClaim> operationClaims)
         {
-            var claims = new List<Claim>();
+            List<Claim> claims = new List<Claim>();
             claims.AddNameIdentifier(user.Id.ToString());
             claims.AddEmail(user.Email);
             claims.AddName($"{user.FirstName} {user.LastName}");

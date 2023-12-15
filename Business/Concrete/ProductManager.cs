@@ -30,6 +30,7 @@ namespace Business.Concrete
         {
             this._productDal = productDal;
         }
+        //[SecuredOperation("product.add")]
         [CacheAspect]
         public IDataResult<List<Product>> GetAll()
         {
@@ -41,7 +42,7 @@ namespace Business.Concrete
         }
 
         //[SecuredOperation("product.add,admin")]
-        [CacheRemoveAspect("IProductService.Get")]
+        //[CacheRemoveAspect("IProductService.Get")]
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {

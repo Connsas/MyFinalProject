@@ -1,4 +1,6 @@
-﻿using Business.Abstract;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Business.Abstract;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +29,9 @@ namespace WebAPI.Controllers
             var result = _authService.CreateAccessToken(userToLogin.Data);
             if (result.Success)
             {
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(result.Data.Token);
+                var identity = (ClaimsIdentity)User.Identity;
+                identity.AddClaims(token.Claims);
                 return Ok(result.Data);
             }
 

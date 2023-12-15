@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Core.DependencyResolvers
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ICacheManager, MemoryCacheManager>();
             services.AddSingleton<Stopwatch>();
+            services.AddSingleton<JwtSecurityTokenHandler>();
         }
     }
 }
